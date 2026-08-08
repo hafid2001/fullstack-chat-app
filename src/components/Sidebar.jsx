@@ -1,7 +1,8 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
+import assets from '../assets/assets'
 
-const Sidebar = ({selectedUser,setSelctedUser}) => {
+const Sidebar = ({selectedUser,setSelectedUser}) => {
     const navigate = useNavigate();
   return (
    <div className={`bg-[#818582]/10 h-full p-5 rounded-r-xl overflow-y-scroll text-white ${selectedUser ? "max-md:hidden" : '' }`} >
@@ -18,6 +19,11 @@ const Sidebar = ({selectedUser,setSelctedUser}) => {
     </div>
     
     </div>
+
+
+
+    
+   </div>
       
     </div>
   )
