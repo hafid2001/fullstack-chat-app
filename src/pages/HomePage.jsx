@@ -14,11 +14,11 @@ const HomePage = () => {
           selectedUser={selectedUser}
           setSelectedUser={setSelectedUser}
         />
-        <ChatContainer  
-        selectedUser={selectedUser}
-        setSelectedUser={setSelectedUser}
+        <ChatContainer
+          selectedUser={selectedUser}
+          setSelectedUser={setSelectedUser}
         />
-        <RightSidebar />
+        <RightSidebar selectedUser={selectedUser} setSelectedUser={setSelectedUser} />
       </div>
     </div>
   );
