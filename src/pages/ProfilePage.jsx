@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import assets from "../assets/assets";
 
 const ProfilePage = () => {
+  console.log("🔥 PROFILE PAGE RENDERED");
   const [selectedImg, setSelectedImg] = useState();
   const navigate = useNavigate();
   const [name, setName] = useState("Ahmd Ali");
@@ -11,7 +12,7 @@ const ProfilePage = () => {
 
   const handleSubmit = async (e) =>{
   e.preventDefault();
-  navigate('/')
+  navigate('/profile')
   }
 
   return (
