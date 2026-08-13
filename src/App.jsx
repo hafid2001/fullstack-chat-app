@@ -15,6 +15,7 @@ if (isCheckingAuth) {
 }
   return (
     <div className="bg-[url('/src/assets/bgImage.svg')] bg-contain">
+      <Toaster/>
       <Routes>
         <Route
           path="/"
