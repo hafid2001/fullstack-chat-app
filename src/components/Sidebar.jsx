@@ -1,12 +1,23 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import assets from "../assets/assets";
-import { userDummyData } from "../assets/assets";
 import { AuthContext } from "../../context/AuthContext";
+import { ChatContext } from "../../context/CahtContext";
 
-const Sidebar = ({ selectedUser, setSelectedUser }) => {
-  const {logout} = useContext(AuthContext);
+const Sidebar = () => { 
+  const {getUsers , users , setSelectedUser,selectedUser , unseenMessages,setUnseenMessages}=useContext(ChatContext);
+  const {logout , onlineUsers} = useContext(AuthContext);
+  const [input, setInput] = useState(false);
   const navigate = useNavigate();
+
+  const filteredUsers = input ? users.filter((user)=>user.fullName.toLowerCase().includes(input.toLowerCase())):users;
+   
+    useEffect(()=>{
+      getUsers();
+    },[onlineUsers]);
+   
+
+
   return (
     <div
       className={`bg-[#818582]/10 h-full p-5 rounded-r-xl overflow-y-scroll text-white ${selectedUser ? "max-md:hidden" : ""}`}
@@ -36,6 +47,7 @@ const Sidebar = ({ selectedUser, setSelectedUser }) => {
         <div className="bg-[#282142] rounded-full flex items-center gap-2 py-3 px-4 mt-5 ">
           <img src={assets.search_icon} alt="Search" className="w-3" />
           <input
+          onChange={(e)=>setInput(e.target.value)}
             type="text"
             className="bg-transparent border-none outline-none text-white text-xs placeholder-[#c8c8c8] flex-1"
             placeholder="Search user ..."
@@ -43,7 +55,7 @@ const Sidebar = ({ selectedUser, setSelectedUser }) => {
         </div>
       </div>
       <div className="flex flex-col">
-        {userDummyData.map((user, index) => (
+        {filteredUsers.map((user, index) => (
           <div
             onClick={() => setSelectedUser(user)}
             key={index}
@@ -57,18 +69,19 @@ const Sidebar = ({ selectedUser, setSelectedUser }) => {
             />
             <div className="flex flex-col leading-5">
               <p>{user.fullName}</p>
-              {index < 3 ? (
-                <span className="text-green-400 text-xs"> online </span>
-              ) : (
-                <span className="text-gray-400 text-xs"> offline </span>
-              )}
+              {onlineUsers.includes(user._id)
+
+               ? <span className="text-green-400 text-xs"> online </span>
+               
+              : <span className="text-gray-400 text-xs"> offline </span>
+              }
             </div>
 
-            {index > 2 && (
+            { unseenMessages[user._id] > 0 && 
               <p className="absolute top-1/2 right-4 -translate-y-1/2 text-xs h-5 min-w-5 px-1 flex justify-center items-center rounded-full bg-violet-500/50">
-                {index}
+                {unseenMessages[user._id]}
               </p>
-            )}
+            }
           </div>
         ))}
       </div>

@@ -1,7 +1,48 @@
-import React from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import assets from "../assets/assets";
+import { AuthContext } from "../../context/AuthContext";
+import toast from "react-hot-toast";
 
-const ChatContainer = ({ selectedUser, setSelectedUser }) => {
+const ChatContainer = () => {
+
+const {messages,selectedUser,setSelectedUser,sendMessage,getMessages} = useContext(ChatContext);
+const {authUser,onlineUsers} = useContext(AuthContext)
+
+const scrollEnd = useRef()
+const [input , setInput ] =useState('')
+
+//Hnadle sending a message
+const handleSendMessage = async (e)=>{
+   e.preventDefulat();
+   if(input.trim() === "") return null;
+   await sendMessage({text : input.trim()});
+   setInput("")
+}
+// Handle sendign an image
+const handleSendImage = async(e)=>{
+
+const file = e.target.files[0];
+if(!file || !file.type.startsWith("/image")){
+  toast.error("select an image file")
+  return;
+}
+const reader = new FileReader();
+ reader.onloadend = async()=>{
+  await sendMessage({Image : reader.result})
+  e.target.value = ""
+
+ }
+ reader.readAsDataURL(file)
+}
+
+ useEffect(()=>{
+  if(scrollEnd.current){
+    scrollEnd.current.scrollIntoView({behavior : "smooth"})
+  }
+ },[]);
+
+
+
   return selectedUser ? (
     <div className="h-full overflow-scroll relative backdrop-blur-lg">
       {/* Chat Header */}
@@ -26,11 +67,14 @@ const ChatContainer = ({ selectedUser, setSelectedUser }) => {
       <div className="absolute bottom-0 left-0 right-0 flex items-center gap-3 p-3">
         <div className="flex-1 flex items-center bg-gray-100/12 px-3 rounded-full">
           <input
+          onChange={(e)=> setInput(e.target.value)}
+          value={input}
+          onKeyDown={(e)=> e.key=== "Enter"? handleSendMessage(e) : null}
             type="text"
             placeholder="Type a message ..."
             className="flex-1 text-sm p-3 border-none rounded-lg outline-none text-white placeholder-gray-400"
           />
-          <input type="file" id="image" accept="image/png, image/jpeg" hidden />
+          <input onChange={handleSendImage} type="file" id="image" accept="image/png, image/jpeg" hidden />
           <label htmlFor="image">
             <img
               src={assets.gallery_icon}
@@ -39,7 +83,7 @@ const ChatContainer = ({ selectedUser, setSelectedUser }) => {
             />
           </label>
         </div>
-        <img src={assets.send_button} alt="" className="w-7 cursor-pointer" />
+        <img onClick={handleSendMessage} src={assets.send_button} alt="" className="w-7 cursor-pointer" />
       </div>
     </div>
   ) : (

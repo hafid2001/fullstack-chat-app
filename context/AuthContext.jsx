@@ -12,7 +12,7 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [authUser, setAuthUser] = useState(null);
-  const [onlineUser, setOnlineUser] = useState([]);
+  const [onlineUsers, setOnlineUsers] = useState([]);
   const [socket, setSocket] = useState(null);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
@@ -32,10 +32,9 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.log("CHECK AUTH ERROR:", error);
       toast.error(error.message);
-    }  finally {
-    setIsCheckingAuth(false);
-  }
-
+    } finally {
+      setIsCheckingAuth(false);
+    }
   };
 
   // Run checkAuth whenever token changes
@@ -46,8 +45,8 @@ export const AuthProvider = ({ children }) => {
 
       // Check if token is valid
       checkAuth();
-    }else{
-         setIsCheckingAuth(false);
+    } else {
+      setIsCheckingAuth(false);
     }
   }, [token]);
 
@@ -57,10 +56,7 @@ export const AuthProvider = ({ children }) => {
       console.log("STATE:", state);
       console.log("CREDENTIALS:", credentials);
 
-      const { data } = await axios.post(
-        `/api/auth/${state}`,
-        credentials
-      );
+      const { data } = await axios.post(`/api/auth/${state}`, credentials);
 
       console.log("AUTH RESPONSE:", data);
 
@@ -95,7 +91,7 @@ export const AuthProvider = ({ children }) => {
 
     setToken(null);
     setAuthUser(null);
-    setOnlineUser([]);
+    setOnlineUsers([]);
 
     axios.defaults.headers.common["token"] = null;
 
@@ -110,10 +106,7 @@ export const AuthProvider = ({ children }) => {
   // Update profile
   const updateProfile = async (body) => {
     try {
-      const { data } = await axios.put(
-        "/api/auth/update-profile",
-        body
-      );
+      const { data } = await axios.put("/api/auth/update-profile", body);
 
       if (data.success) {
         setAuthUser(data.user);
@@ -165,24 +158,21 @@ export const AuthProvider = ({ children }) => {
     newSocket.on("getOnlineUsers", (userIds) => {
       console.log("ONLINE USERS:", userIds);
 
-      setOnlineUser(userIds);
+      setOnlineUsers(userIds);
     });
   };
 
   const value = {
     axios,
     authUser,
-    onlineUser,
-    socket,
-    login,
-    logout,
+    onlineUsers,
+    onlineUser: onlineUsers,
     updateProfile,
-     isCheckingAuth
+    isCheckingAuth,
+    logout,
+    login
+
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
